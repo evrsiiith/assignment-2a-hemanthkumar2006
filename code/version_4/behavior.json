@@ -1,0 +1,222 @@
+{
+  "behaviors": [
+    {
+      "id": "BuyTicket",
+      "event": "OnCondition",
+      "actors": ["TicketMachine"],
+      "precondition": {
+        "all": [
+          { "equals": ["Self.state", "idle"] },
+          { "runAlgorithm": "IsTicketMachineClicked" }
+        ]
+      },
+      "action": { "runAlgorithm": "DispenseTicket" },
+      "postcondition": { "equals": ["Self.state", "dispensed"] }
+    },
+    {
+      "id": "GetPopcorn",
+      "event": "OnCondition",
+      "actors": ["PopcornStand"],
+      "precondition": {
+        "all": [
+          { "equals": ["Self.state", "idle"] },
+          { "runAlgorithm": "IsStandClicked" }
+        ]
+      },
+      "action": { "runAlgorithm": "ServePopcorn" },
+      "postcondition": { "equals": ["Self.state", "serving"] }
+    },
+    {
+      "id": "UnlockDoor",
+      "event": "OnCondition",
+      "actors": ["TheaterDoor"],
+      "precondition": {
+        "all": [
+          { "equals": ["Self.state", "locked"] },
+          { "runAlgorithm": "CheckHasTicket" }
+        ]
+      },
+      "action": {
+        "runAlgorithm": "UnlockTheaterDoor",
+        "params": { "obj": "Self" }
+      },
+      "postcondition": { "equals": ["Self.state", "unlocked"] }
+    },
+    {
+      "id": "OpenDoor",
+      "event": "OnCondition",
+      "actors": ["TheaterDoor"],
+      "precondition": {
+        "all": [
+          { "equals": ["Self.state", "unlocked"] },
+          { "runAlgorithm": "IsDoorClicked", "params": { "obj": "Self" } }
+        ]
+      },
+      "action": {
+        "runAlgorithm": "OpenTheaterDoor",
+        "params": { "obj": "Self" }
+      },
+      "postcondition": { "equals": ["Self.state", "open"] }
+    },
+    {
+      "id": "SelectAction",
+      "event": "OnCondition",
+      "actors": ["MovieSelectionPanel"],
+      "precondition": {
+        "all": [
+          { "runAlgorithm": "IsActionSelected" }
+        ]
+      },
+      "action": {
+        "runAlgorithm": "SetActionMode",
+        "params": { "obj": "Self" }
+      },
+      "postcondition": { "equals": ["Self.state", "action"] }
+    },
+    {
+      "id": "SelectHorror",
+      "event": "OnCondition",
+      "actors": ["MovieSelectionPanel"],
+      "precondition": {
+        "all": [
+          { "runAlgorithm": "IsHorrorSelected" }
+        ]
+      },
+      "action": {
+        "runAlgorithm": "SetHorrorMode",
+        "params": { "obj": "Self" }
+      },
+      "postcondition": { "equals": ["Self.state", "horror"] }
+    },
+    {
+      "id": "SelectSciFi",
+      "event": "OnCondition",
+      "actors": ["MovieSelectionPanel"],
+      "precondition": {
+        "all": [
+          { "runAlgorithm": "IsSciFiSelected" }
+        ]
+      },
+      "action": {
+        "runAlgorithm": "SetSciFiMode",
+        "params": { "obj": "Self" }
+      },
+      "postcondition": { "equals": ["Self.state", "scifi"] }
+    },
+    {
+      "id": "CycleLighting",
+      "event": "OnCondition",
+      "actors": ["LightingPanel"],
+      "precondition": {
+        "all": [
+          { "runAlgorithm": "IsLightingPanelClicked" }
+        ]
+      },
+      "action": {
+        "runAlgorithm": "CycleLighting",
+        "params": { "obj": "Self" }
+      }
+    },
+    {
+      "id": "SitDown",
+      "event": "OnCondition",
+      "actors": ["Seat"],
+      "precondition": {
+        "all": [
+          { "equals": ["Self.state", "empty"] },
+          { "runAlgorithm": "IsSeatClicked", "params": { "obj": "Self" } }
+        ]
+      },
+      "action": {
+        "runAlgorithm": "SitOnSeat",
+        "params": { "obj": "Self" }
+      },
+      "postcondition": { "equals": ["Self.state", "occupied"] }
+    },
+    {
+      "id": "StartMovie",
+      "event": "OnCondition",
+      "actors": ["CinemaScreen"],
+      "precondition": {
+        "all": [
+          { "equals": ["Self.state", "off"] },
+          { "runAlgorithm": "IsAnySeatOccupied" },
+          { "runAlgorithm": "IsMovieModeSelected" }
+        ]
+      },
+      "action": {
+        "runAlgorithm": "PlayMovie",
+        "params": { "obj": "Self" }
+      },
+      "postcondition": { "equals": ["Self.state", "playing"] }
+    },
+    {
+      "id": "AutoDimLights",
+      "event": "OnCondition",
+      "actors": ["LightingPanel"],
+      "precondition": {
+        "all": [
+          { "equals": ["Self.state", "bright"] },
+          { "equals": ["CinemaScreen.state", "playing"] },
+          { "runAlgorithm": "IsDimModeNeeded" }
+        ]
+      },
+      "action": {
+        "runAlgorithm": "DimLightsForMovie",
+        "params": { "obj": "Self" }
+      },
+      "postcondition": { "equals": ["Self.state", "dim"] }
+    },
+    {
+      "id": "HorrorLighting",
+      "event": "OnCondition",
+      "actors": ["LightingPanel"],
+      "precondition": {
+        "all": [
+          { "equals": ["CinemaScreen.state", "playing"] },
+          { "equals": ["MovieSelectionPanel.state", "horror"] }
+        ]
+      },
+      "action": {
+        "runAlgorithm": "SetHorrorLighting",
+        "params": { "obj": "Self" }
+      },
+      "postcondition": { "equals": ["Self.state", "dark"] }
+    },
+    {
+      "id": "SciFiLighting",
+      "event": "OnCondition",
+      "actors": ["LightingPanel"],
+      "precondition": {
+        "all": [
+          { "equals": ["CinemaScreen.state", "playing"] },
+          { "equals": ["MovieSelectionPanel.state", "scifi"] }
+        ]
+      },
+      "action": {
+        "runAlgorithm": "SetSciFiLighting",
+        "params": { "obj": "Self" }
+      },
+      "postcondition": { "equals": ["Self.state", "dim"] }
+    },
+    {
+      "id": "ResetOnExit",
+      "event": "OnCondition",
+      "actors": ["Seat"],
+      "precondition": {
+        "all": [
+          { "equals": ["Self.state", "occupied"] },
+          { "runAlgorithm": "IsSeatVacated", "params": { "obj": "Self" } }
+        ]
+      },
+      "action": { "runAlgorithm": "ResetTheater" },
+      "postcondition": {
+        "all": [
+          { "equals": ["Self.state", "empty"] },
+          { "equals": ["CinemaScreen.state", "off"] },
+          { "equals": ["MovieSelectionPanel.state", "idle"] }
+        ]
+      }
+    }
+  ]
+}
